@@ -18,14 +18,14 @@ use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Deploy {
+pub struct App {
     pub api_version: ApiVersion,
     pub metadata: Metadata,
     pub containers: HashMap<String, Container>,
 }
 
-impl From<Deploy> for Deployment {
-    fn from(deploy: Deploy) -> Self {
+impl From<App> for Deployment {
+    fn from(deploy: App) -> Self {
         Deployment {
             metadata: ObjectMeta {
                 name: Some(deploy.metadata.name),
