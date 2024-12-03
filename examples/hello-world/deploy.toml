@@ -1,0 +1,10 @@
+apiVersion = "v1beta1"
+
+[metadata]
+name = "hello-world"
+
+[containers]
+[containers.hello]
+image = "busybox"
+command = ["/bin/sh"]
+args = ["-c", "while true; do echo Hello World!; sleep 5; done"]
