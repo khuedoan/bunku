@@ -1,3 +1,3 @@
 # `bunku`
 
-**BUN**dle **KU**beernetes resources.
+**BUN**dle **KU**bernetes resources.
