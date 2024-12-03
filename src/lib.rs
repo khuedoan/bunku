@@ -5,14 +5,14 @@ pub mod metadata;
 use api_version::ApiVersion;
 use container::Container;
 use metadata::Metadata;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
 use k8s_openapi::{
     api::{
         apps::v1::{Deployment, DeploymentSpec},
         core::v1::{Container as KubeContainer, PodSpec, PodTemplateSpec},
     },
-    apimachinery::pkg::apis::meta::v1::ObjectMeta,
+    apimachinery::pkg::apis::meta::v1::{LabelSelector, ObjectMeta},
 };
 use serde::Deserialize;
 
@@ -25,16 +25,28 @@ pub struct App {
 }
 
 impl From<App> for Deployment {
-    fn from(deploy: App) -> Self {
+    fn from(app: App) -> Self {
+        let labels = BTreeMap::from([(
+            "app.kubernetes.io/name".to_string(),
+            app.metadata.name.clone(),
+        )]);
         Deployment {
             metadata: ObjectMeta {
-                name: Some(deploy.metadata.name),
+                name: Some(app.metadata.name.clone()),
                 ..Default::default()
             },
             spec: Some(DeploymentSpec {
+                selector: LabelSelector {
+                    match_labels: Some(labels.clone()),
+                    ..Default::default()
+                },
                 template: PodTemplateSpec {
+                    metadata: Some(ObjectMeta {
+                        labels: Some(labels),
+                        ..Default::default()
+                    }),
                     spec: Some(PodSpec {
-                        containers: deploy
+                        containers: app
                             .containers
                             .into_iter()
                             .map(|(name, container)| KubeContainer {
@@ -47,7 +59,6 @@ impl From<App> for Deployment {
                             .collect(),
                         ..Default::default()
                     }),
-                    ..Default::default()
                 },
                 ..Default::default()
             }),
