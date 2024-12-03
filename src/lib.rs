@@ -1,16 +1,21 @@
 pub mod api_version;
 pub mod container;
 pub mod metadata;
+pub mod service;
 
 use api_version::ApiVersion;
 use container::Container;
 use metadata::Metadata;
+use service::Service;
 use std::collections::{BTreeMap, HashMap};
 
 use k8s_openapi::{
     api::{
         apps::v1::{Deployment, DeploymentSpec},
-        core::v1::{Container as KubeContainer, PodSpec, PodTemplateSpec},
+        core::v1::{
+            Container as KubeContainer, PodSpec, PodTemplateSpec, Service as KubeService,
+            ServicePort, ServiceSpec,
+        },
     },
     apimachinery::pkg::apis::meta::v1::{LabelSelector, ObjectMeta},
 };
@@ -22,17 +27,18 @@ pub struct App {
     pub api_version: ApiVersion,
     pub metadata: Metadata,
     pub containers: HashMap<String, Container>,
+    pub service: Option<Service>,
 }
 
-impl From<App> for Deployment {
-    fn from(app: App) -> Self {
+impl App {
+    pub fn deployment(self) -> Deployment {
         let labels = BTreeMap::from([(
             "app.kubernetes.io/name".to_string(),
-            app.metadata.name.clone(),
+            self.metadata.name.clone(),
         )]);
         Deployment {
             metadata: ObjectMeta {
-                name: Some(app.metadata.name.clone()),
+                name: Some(self.metadata.name.clone()),
                 ..Default::default()
             },
             spec: Some(DeploymentSpec {
@@ -46,14 +52,14 @@ impl From<App> for Deployment {
                         ..Default::default()
                     }),
                     spec: Some(PodSpec {
-                        containers: app
+                        containers: self
                             .containers
                             .into_iter()
                             .map(|(name, container)| KubeContainer {
                                 name,
                                 image: Some(container.image),
-                                command: Some(container.command),
-                                args: Some(container.args),
+                                command: container.command,
+                                args: container.args,
                                 ..Default::default()
                             })
                             .collect(),
@@ -63,6 +69,41 @@ impl From<App> for Deployment {
                 ..Default::default()
             }),
             ..Default::default()
+        }
+    }
+
+    pub fn service(self) -> Option<KubeService> {
+        match self.service {
+            None => None,
+            Some(service) => {
+                let labels = BTreeMap::from([(
+                    "app.kubernetes.io/name".to_string(),
+                    self.metadata.name.clone(),
+                )]);
+                Some(KubeService {
+                    metadata: ObjectMeta {
+                        name: Some(self.metadata.name.clone()),
+                        ..Default::default()
+                    },
+                    spec: Some(ServiceSpec {
+                        selector: Some(labels.clone()),
+                        ports: Some(
+                            service
+                                .ports
+                                .into_iter()
+                                .map(|(name, port)| ServicePort {
+                                    name: Some(name),
+                                    port: port.port,
+                                    protocol: port.protocol,
+                                    ..Default::default()
+                                })
+                                .collect(),
+                        ),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                })
+            }
         }
     }
 }

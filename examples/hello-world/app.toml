@@ -3,8 +3,7 @@ apiVersion = "v1beta1"
 [metadata]
 name = "hello-world"
 
-[containers]
-[containers.hello]
-image = "busybox"
+[containers.app]
+image = "docker.io/library/busybox:1.36"
 command = ["/bin/sh"]
 args = ["-c", "while true; do echo Hello World!; sleep 5; done"]

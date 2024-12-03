@@ -1,9 +1,13 @@
 use bunku::App;
 
 fn main() {
-    let example = std::fs::read_to_string("examples/hello-world/app.toml").unwrap();
+    let example = std::fs::read_to_string("examples/nginx/app.toml").unwrap();
     let app: App = toml::from_str(&example).unwrap();
-    let deployment: k8s_openapi::api::apps::v1::Deployment = app.into();
-    let json = serde_json::to_string(&deployment).unwrap();
-    println!("{}", json);
+    let deployment = app.clone().deployment();
+    let service = app.service();
+    println!(
+        "{}{}",
+        serde_json::to_string(&deployment).unwrap(),
+        serde_json::to_string(&service).unwrap()
+    );
 }

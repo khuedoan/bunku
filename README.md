@@ -1,6 +1,6 @@
 # `bunku`
 
-**BUN**dle **KU**bernetes resources.
+**BUN**dle **KU**bernetes applications.
 
 You provide a [Score](https://docs.score.dev) file (see
 [./examples](./examples)), and `bunku` will generate an

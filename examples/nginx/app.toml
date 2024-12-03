@@ -1,0 +1,11 @@
+apiVersion = "v1beta1"
+
+[metadata]
+name = "nginx"
+
+[containers.app]
+image = "docker.io/library/nginx:latest"
+
+[service.ports.http]
+port = 80
+protocol = "TCP"
