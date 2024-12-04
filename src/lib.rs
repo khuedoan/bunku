@@ -25,7 +25,7 @@ use serde::Deserialize;
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct App {
+pub struct Workload {
     pub api_version: ApiVersion,
     pub metadata: Metadata,
     pub containers: HashMap<String, Container>,
@@ -40,7 +40,7 @@ pub enum Resource {
     Dns(provisioner::dns::Params),
 }
 
-impl App {
+impl Workload {
     pub fn deployment(self) -> Deployment {
         let labels = BTreeMap::from([(
             "app.kubernetes.io/name".to_string(),
@@ -115,5 +115,13 @@ impl App {
                 })
             }
         }
+    }
+
+    pub fn resources(self) -> Vec<String> {
+        self.resources
+            .unwrap_or_default()
+            .into_values()
+            .map(|_resource| "".to_string())
+            .collect()
     }
 }
