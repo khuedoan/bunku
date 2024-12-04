@@ -1,9 +1,9 @@
 pub mod api_version;
+pub mod args;
 pub mod container;
 pub mod metadata;
-pub mod service;
 pub mod provisioner;
-pub mod args;
+pub mod service;
 
 use api_version::ApiVersion;
 use container::Container;
@@ -30,6 +30,14 @@ pub struct App {
     pub metadata: Metadata,
     pub containers: HashMap<String, Container>,
     pub service: Option<Service>,
+    pub resources: Option<HashMap<String, Resource>>,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase", tag = "type", content = "params")]
+pub enum Resource {
+    Route(provisioner::route::Params),
+    Dns(provisioner::dns::Params),
 }
 
 impl App {

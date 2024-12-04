@@ -1,1 +1,2 @@
-mod route;
+pub mod dns;
+pub mod route;
