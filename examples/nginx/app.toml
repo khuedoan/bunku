@@ -4,7 +4,7 @@ apiVersion = "v1beta1"
 name = "nginx"
 
 [containers.app]
-image = "docker.io/library/nginx:latest"
+image = "docker.io/library/nginx:1.27.3"
 
 [service.ports.http]
 port = 80

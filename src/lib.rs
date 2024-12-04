@@ -2,6 +2,7 @@ pub mod api_version;
 pub mod container;
 pub mod metadata;
 pub mod service;
+pub mod provisioner;
 
 use api_version::ApiVersion;
 use container::Container;
