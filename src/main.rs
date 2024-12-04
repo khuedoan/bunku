@@ -1,8 +1,14 @@
-use bunku::App;
+use bunku::{
+    App,
+    args::Args,
+};
+use clap::Parser;
 
 fn main() {
-    let example = std::fs::read_to_string("examples/nginx/app.toml").unwrap();
-    let app: App = toml::from_str(&example).unwrap();
+    let args = Args::parse();
+    let filename = args.filename;
+    let filecontent = std::fs::read_to_string(&filename).unwrap();
+    let app: App = toml::from_str(&filecontent).unwrap();
     let deployment = app.clone().deployment();
     let service = app.service();
     println!(

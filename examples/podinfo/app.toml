@@ -12,14 +12,12 @@ protocol = "TCP"
 
 [resources.dns]
 type = "dns"
-params = {
-  subdomain = "podinfo"
-}
+[resources.dns.params]
+subdomain = "podinfo"
 
 [resources.route]
 type = "route"
-params = {
-  host= "${resources.dns.host}"
-  path = "/"
-  port = "http"
-}
+[resources.route.params]
+host= "${resources.dns.host}"
+path = "/"
+port = "http"

@@ -7,7 +7,7 @@ target/release/bunku: src/ Cargo.toml
 	cargo build --release
 
 dev:
-	cargo run
+	cargo run -- --filename ./examples/podinfo/app.toml
 
 fmt:
 	cargo fmt
