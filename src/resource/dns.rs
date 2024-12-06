@@ -21,7 +21,7 @@ impl Dns {
                 host: format!("{subdomain}.localhost"),
             },
             None => Outputs {
-                host: format!("todogeneratedomainhere.localhost"),
+                host: "todogeneratedomainhere.localhost".to_string(),
             },
         }
     }

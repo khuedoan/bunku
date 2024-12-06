@@ -20,9 +20,8 @@ fn main() {
         app.clone().deployment(),
     ));
 
-    match app.service() {
-        Some(service) => kube_manifests.push(bunku::resource::Manifest::Service(service)),
-        None => {}
+    if let Some(service) = app.service() {
+        kube_manifests.push(bunku::resource::Manifest::Service(service))
     }
 
     println!("{:#?}", kube_manifests);
