@@ -4,7 +4,7 @@ pub mod route;
 use crate::metadata::Metadata;
 use gateway_api::apis::standard::httproutes::HTTPRoute;
 use k8s_openapi::api::{apps::v1::Deployment, core::v1::Service as KubeService};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase", tag = "type", content = "params")]
@@ -16,7 +16,7 @@ pub enum Resource {
 }
 
 // TODO maybe use generic?
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", tag = "type", content = "params")]
 pub enum Manifest {
     HTTPRoute(HTTPRoute),
