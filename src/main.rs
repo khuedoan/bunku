@@ -8,14 +8,22 @@ fn main() {
     let filecontent = std::fs::read_to_string(&filename).expect("file not found");
 
     let app: Workload = toml::from_str(&filecontent).expect("failed to parse workload definition");
-    println!("{:#?}", app);
+    let mut kube_manifests: Vec<bunku::resource::Manifest> = app
+        .clone()
+        .resources
+        .unwrap_or_default()
+        .into_iter()
+        .flat_map(|(id, resource)| resource.provision(app.metadata.clone(), id))
+        .collect();
 
-    let deployment = app.clone().deployment();
-    let service = app.service();
-    println!("{deployment:#?}{service:#?}",);
-    println!(
-        "{}{}",
-        serde_json::to_string(&deployment).unwrap(),
-        serde_json::to_string(&service).unwrap()
-    );
+    kube_manifests.push(bunku::resource::Manifest::Deployment(
+        app.clone().deployment(),
+    ));
+
+    match app.service() {
+        Some(service) => kube_manifests.push(bunku::resource::Manifest::Service(service)),
+        None => {}
+    }
+
+    println!("{:#?}", kube_manifests);
 }
