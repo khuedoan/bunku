@@ -12,6 +12,7 @@
           packages = [
             cargo
             clippy
+            mdbook
             rustc
             rustfmt
           ];
