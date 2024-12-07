@@ -1,5 +1,5 @@
 .POSIX:
-.PHONY: default dev fmt test test-unit lint update
+.PHONY: default dev fmt test test-unit lint update docs
 
 default: fmt lint target/release/bunku
 
@@ -23,3 +23,6 @@ lint:
 update:
 	nix flake update
 	cargo update
+
+docs:
+	mdbook serve

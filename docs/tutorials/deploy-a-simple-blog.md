@@ -1,15 +1,4 @@
-# `bunku`
-
-**BUN**dle **KU**bernetes applications.
-
-You provide a [Score](https://docs.score.dev)-like file (see
-[./examples](./examples)), and `bunku` will generate an [OCI
-image](https://github.com/opencontainers/image-spec/blob/main/spec.md) that
-contains Kubernetes manifests, which can be used with GitOps controllers like
-[ArgoCD](https://argo-cd.readthedocs.io) or [Flux CD](https://fluxcd.io/) to
-apply to Kubernetes clusters.
-
-## Tutorial
+# Deploy a simple blog
 
 Let's start with a single container in an `app.toml` file located at the root
 of your project:
@@ -54,21 +43,3 @@ resource output that will be replaced with the actual domain name provisioned
 by the platform provider.
 
 Now you can access your blog at `https://blog.<base-domain>`.
-
-## Development
-
-### Prerequisites
-
-- Read the [Score specification reference](https://docs.score.dev/docs/score-specification/score-spec-reference)
-- Install [Nix](https://nixos.org/download)
-
-Open the development shell:
-
-```sh
-nix develop
-```
-
-## References
-
-- [Score specification reference](https://docs.score.dev/docs/score-specification/score-spec-reference)
-- [Placeholder parser inspired by `envsubst`](https://github.com/coreos/envsubst-rs)

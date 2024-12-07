@@ -1,0 +1,6 @@
+[book]
+title = "Bunku"
+src = "docs"
+
+[output.html]
+preferred-dark-theme = "ayu"
