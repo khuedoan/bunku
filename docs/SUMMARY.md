@@ -4,8 +4,8 @@
 
 # Tutorials
 
-- [An overview of the app config file](tutorials/an-overview-of-the-app-config-file.md)
-- [Deploy a simple blog](tutorials/deploy-a-simple-blog.md)
+- [An overview of the values config file](tutorials/an-overview-of-the-values-config-file.md)
+- [Deploy a simple application](tutorials/deploy-a-simple-application.md)
 
 # Concepts
 
@@ -16,6 +16,7 @@
 
 # Reference
 
-- [Runtime contract](reference/runtime-contract.md)
-- [Runtime requirement](reference/runtime-requirements.md)
+- [values.toml format](reference/values-toml-format.md)
+- [Supported resources](reference/supported-resources.md)
+- [Runtime requirements](reference/runtime-requirements.md)
 - [Acknowledgements](reference/acknowledgements.md)

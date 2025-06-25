@@ -1,23 +1,31 @@
 # Runtime requirements
 
-## Orchestrator
+## System Requirements
 
-- Requires a Kubernetes cluster (v1.31 or later) to run the application.
+- **Rust**: 1.70 or later
+- **Cargo**: Latest version with Rust installation
 
-## Networking
+## Dependencies
 
-- Standard CNI
-- A service mesh and gateway controller supporting at least the following:
-    - mTLS
-    - `Gateway`
-    - `HTTPRoute`
-- A default `Gateway` with a managed certificate (e.g., via [cert-manager](https://cert-manager.io))
+The following crates are used:
+- `k8s-openapi`: Kubernetes API types
+- `gateway-api`: Gateway API types  
+- `serde`: Serialization/deserialization
+- `toml`: TOML parsing
+- `clap`: Command-line interface
 
-## Secrets
+## Kubernetes Cluster
 
-- [External Secrets Operator](https://external-secrets.io)
-- A default `ClusterSecretStore`
+- **Version**: Kubernetes v1.25 or later
+- **APIs**: Core API v1 (for Deployments, Services, ConfigMaps, ServiceAccounts, PVCs)
+- **Gateway API**: v1beta1 or later (for HTTPRoute support when enabled)
 
 ## Storage
 
-- A default storage class that supports dynamic provisioning
+- A default storage class that supports dynamic provisioning (for PersistentVolumeClaims)
+
+## Output
+
+- Generated manifests are in JSON format
+- Compatible with `kubectl apply -f` or GitOps tools
+- No special runtime dependencies for the generated manifests
