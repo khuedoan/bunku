@@ -1,0 +1,52 @@
+[global]
+nameOverride = "myapp"
+
+[global.labels]
+"environment" = "production"
+"team" = "platform"
+
+[global.annotations]
+"example.com/version" = "1.0.0"
+
+# Deployment
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 3
+
+[controllers.main.containers.app]
+image = "nginx:1.25"
+
+[controllers.main.containers.app.ports.http]
+containerPort = 80
+protocol = "TCP"
+
+# Service
+[service.main]
+enabled = true
+type = "ClusterIP"
+controller = "main"
+
+[service.main.ports.http]
+port = 80
+targetPort = 80
+protocol = "TCP"
+
+# ConfigMap
+[configMaps.config]
+enabled = true
+
+[configMaps.config.data]
+"nginx.conf" = "server { listen 80; }"
+"app.properties" = "debug=false"
+
+# ServiceAccount
+[serviceAccount.main]
+enabled = true
+
+# PVC
+[persistence.data]
+enabled = true
+type = "pvc"
+size = "10Gi"
+accessModes = ["ReadWriteOnce"] 

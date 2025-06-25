@@ -1,0 +1,24 @@
+[global]
+nameOverride = "podinfo"
+
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 1
+
+[controllers.main.containers.app]
+image = "docker.io/stefanprodan/podinfo:6.7.1"
+
+[controllers.main.containers.app.ports.http]
+containerPort = 9898
+protocol = "TCP"
+
+[service.main]
+enabled = true
+type = "ClusterIP"
+controller = "main"
+
+[service.main.ports.http]
+port = 9898
+targetPort = 9898
+protocol = "TCP" 

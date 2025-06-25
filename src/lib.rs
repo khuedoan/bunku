@@ -1,122 +1,144 @@
-pub mod api_version;
-pub mod args;
-pub mod container;
-pub mod metadata;
-pub mod placeholder;
-pub mod resource;
-pub mod service;
+pub mod error;
+pub mod generators;
+pub mod values;
 
-use api_version::ApiVersion;
-use container::Container;
-use metadata::Metadata;
-use resource::Resource;
-use service::Service;
-use std::collections::{BTreeMap, HashMap};
+pub use generators::generate_all_resources;
+pub use values::Values;
 
-use k8s_openapi::{
-    api::{
-        apps::v1::{Deployment, DeploymentSpec},
-        core::v1::{
-            Container as KubeContainer, PodSpec, PodTemplateSpec, Service as KubeService,
-            ServicePort, ServiceSpec,
-        },
-    },
-    apimachinery::pkg::apis::meta::v1::{LabelSelector, ObjectMeta},
-};
-use serde::Deserialize;
+use serde_json::Value;
+use std::fs;
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Workload {
-    pub api_version: ApiVersion,
-    pub metadata: Metadata,
-    pub containers: HashMap<String, Container>,
-    pub service: Option<Service>,
-    pub resources: Option<HashMap<String, Resource>>,
+pub fn process_values_file(filename: &str) -> Result<Vec<Value>, Box<dyn std::error::Error>> {
+    let content = fs::read_to_string(filename)?;
+    let values: Values = toml::from_str(&content)?;
+    let resources = generate_all_resources(&values);
+    Ok(resources)
 }
 
-impl Workload {
-    pub fn deployment(self) -> Deployment {
-        let labels = BTreeMap::from([(
-            "app.kubernetes.io/name".to_string(),
-            self.metadata.name.clone(),
-        )]);
-        Deployment {
-            metadata: ObjectMeta {
-                name: Some(self.metadata.name.clone()),
-                ..Default::default()
-            },
-            spec: Some(DeploymentSpec {
-                selector: LabelSelector {
-                    match_labels: Some(labels.clone()),
-                    ..Default::default()
-                },
-                template: PodTemplateSpec {
-                    metadata: Some(ObjectMeta {
-                        labels: Some(labels),
-                        ..Default::default()
-                    }),
-                    spec: Some(PodSpec {
-                        containers: self
-                            .containers
-                            .into_iter()
-                            .map(|(name, container)| KubeContainer {
-                                name,
-                                image: Some(container.image),
-                                command: container.command,
-                                args: container.args,
-                                ..Default::default()
-                            })
-                            .collect(),
-                        ..Default::default()
-                    }),
-                },
-                ..Default::default()
-            }),
-            ..Default::default()
-        }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::io::Write;
+    use tempfile::NamedTempFile;
+
+    #[test]
+    fn test_simple_deployment() {
+        let toml_content = r#"
+[global]
+nameOverride = "test-app"
+
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 2
+
+[controllers.main.containers.app]
+image = "nginx:latest"
+
+[controllers.main.containers.app.ports.http]
+containerPort = 80
+protocol = "TCP"
+"#;
+
+        let values: Values = toml::from_str(toml_content).unwrap();
+        let resources = generate_all_resources(&values);
+
+        assert!(!resources.is_empty());
+        // Should generate a deployment
+        assert_eq!(resources.len(), 1);
     }
 
-    pub fn service(self) -> Option<KubeService> {
-        match self.service {
-            None => None,
-            Some(service) => {
-                let labels = BTreeMap::from([(
-                    "app.kubernetes.io/name".to_string(),
-                    self.metadata.name.clone(),
-                )]);
-                Some(KubeService {
-                    metadata: ObjectMeta {
-                        name: Some(self.metadata.name.clone()),
-                        ..Default::default()
-                    },
-                    spec: Some(ServiceSpec {
-                        selector: Some(labels.clone()),
-                        ports: Some(
-                            service
-                                .ports
-                                .into_iter()
-                                .map(|(name, port)| ServicePort {
-                                    name: Some(name),
-                                    port: port.port,
-                                    protocol: port.protocol,
-                                    ..Default::default()
-                                })
-                                .collect(),
-                        ),
-                        ..Default::default()
-                    }),
-                    ..Default::default()
-                })
-            }
-        }
+    #[test]
+    fn test_deployment_with_service() {
+        let toml_content = r#"
+[global]
+nameOverride = "test-app"
+
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 1
+
+[controllers.main.containers.app]
+image = "nginx:latest"
+
+[controllers.main.containers.app.ports.http]
+containerPort = 80
+
+[service.main]
+enabled = true
+type = "ClusterIP"
+controller = "main"
+
+[service.main.ports.http]
+port = 80
+targetPort = 80
+"#;
+
+        let values: Values = toml::from_str(toml_content).unwrap();
+        let resources = generate_all_resources(&values);
+
+        // Should generate a deployment and a service
+        assert_eq!(resources.len(), 2);
     }
 
-    pub fn resources(self) -> Vec<String> {
-        self.resources
-            .unwrap_or_default()
-            .into_values()
-            .map(|_resource| "".to_string())
-            .collect()
+    #[test]
+    fn test_process_values_file() {
+        let toml_content = r#"
+[global]
+nameOverride = "file-test"
+
+[controllers.main]
+enabled = true
+type = "deployment"
+
+[controllers.main.containers.app]
+image = "busybox:latest"
+"#;
+
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(toml_content.as_bytes()).unwrap();
+
+        let resources = process_values_file(temp_file.path().to_str().unwrap()).unwrap();
+        assert!(!resources.is_empty());
+    }
+
+    #[test]
+    fn test_configmap_generation() {
+        let toml_content = r#"
+[global]
+nameOverride = "test-app"
+
+[configMaps.config]
+enabled = true
+
+[configMaps.config.data]
+key1 = "value1"
+key2 = "value2"
+"#;
+
+        let values: Values = toml::from_str(toml_content).unwrap();
+        let resources = generate_all_resources(&values);
+
+        assert_eq!(resources.len(), 1);
+    }
+
+    #[test]
+    fn test_pvc_generation() {
+        let toml_content = r#"
+[global]
+nameOverride = "test-app"
+
+[persistence.data]
+enabled = true
+type = "pvc"
+size = "10Gi"
+accessModes = ["ReadWriteOnce"]
+"#;
+
+        let values: Values = toml::from_str(toml_content).unwrap();
+        let resources = generate_all_resources(&values);
+
+        assert_eq!(resources.len(), 1);
     }
 }
