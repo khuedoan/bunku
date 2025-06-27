@@ -9,7 +9,7 @@
 
 The following crates are used:
 - `k8s-openapi`: Kubernetes API types
-- `gateway-api`: Gateway API types  
+- `gateway-api`: Gateway API types
 - `serde`: Serialization/deserialization
 - `toml`: TOML parsing
 - `clap`: Command-line interface

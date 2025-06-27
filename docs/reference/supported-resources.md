@@ -52,4 +52,4 @@ Bunku automatically manages relationships between resources:
 All resources are generated as:
 - **JSON**: Kubernetes-compatible JSON manifests
 - **Standards**: Follows Kubernetes API specifications using k8s-openapi crate
-- **Validation**: Type-safe generation prevents invalid configurations 
+- **Validation**: Type-safe generation prevents invalid configurations
