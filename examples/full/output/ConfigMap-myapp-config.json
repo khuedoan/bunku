@@ -1,0 +1,20 @@
+{
+  "apiVersion": "v1",
+  "data": {
+    "app.properties": "debug=false",
+    "nginx.conf": "server { listen 80; }"
+  },
+  "kind": "ConfigMap",
+  "metadata": {
+    "annotations": {
+      "example.com/version": "1.0.0"
+    },
+    "labels": {
+      "app.kubernetes.io/instance": "release",
+      "app.kubernetes.io/name": "config",
+      "environment": "production",
+      "team": "platform"
+    },
+    "name": "myapp-config"
+  }
+}

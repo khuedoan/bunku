@@ -25,7 +25,6 @@ mod tests {
     fn test_simple_deployment() {
         let toml_content = r#"
 [global]
-nameOverride = "test-app"
 
 [controllers.main]
 enabled = true
@@ -52,7 +51,6 @@ protocol = "TCP"
     fn test_deployment_with_service() {
         let toml_content = r#"
 [global]
-nameOverride = "test-app"
 
 [controllers.main]
 enabled = true
@@ -86,7 +84,6 @@ targetPort = 80
     fn test_process_values_file() {
         let toml_content = r#"
 [global]
-nameOverride = "file-test"
 
 [controllers.main]
 enabled = true
@@ -107,7 +104,6 @@ image = "busybox:latest"
     fn test_configmap_generation() {
         let toml_content = r#"
 [global]
-nameOverride = "test-app"
 
 [configMaps.config]
 enabled = true
@@ -127,7 +123,6 @@ key2 = "value2"
     fn test_pvc_generation() {
         let toml_content = r#"
 [global]
-nameOverride = "test-app"
 
 [persistence.data]
 enabled = true

@@ -1,4 +1,4 @@
-use super::{common, ResourceGenerator};
+use super::{ResourceGenerator, common};
 use crate::values::Values;
 use k8s_openapi::api::core::v1::{
     PersistentVolumeClaim, PersistentVolumeClaimSpec, VolumeResourceRequirements,

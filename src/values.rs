@@ -54,8 +54,6 @@ pub struct Values {
 #[derive(Debug, Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalConfig {
-    pub name_override: Option<String>,
-    pub fullname_override: Option<String>,
     #[serde(default)]
     pub propagate_global_metadata_to_pods: bool,
     #[serde(default)]

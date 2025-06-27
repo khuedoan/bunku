@@ -1,11 +1,21 @@
-apiVersion = "v1beta1"
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 1
 
-[metadata]
-name = "nginx"
-
-[containers.app]
+[controllers.main.containers.app]
 image = "docker.io/library/nginx:1.27.3"
 
-[service.ports.http]
+[controllers.main.containers.app.ports.http]
+containerPort = 80
+protocol = "TCP"
+
+[service.main]
+enabled = true
+type = "ClusterIP"
+controller = "main"
+
+[service.main.ports.http]
 port = 80
+targetPort = 80
 protocol = "TCP"

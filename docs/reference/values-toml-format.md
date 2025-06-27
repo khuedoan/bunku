@@ -6,8 +6,6 @@ The `values.toml` file uses TOML format to define Kubernetes resources. Below is
 
 ```toml
 [global]
-nameOverride = "custom-name"          # Override the default name
-namespaceOverride = "custom-namespace" # Override the namespace
 
 [global.labels]
 "app.kubernetes.io/version" = "1.0.0"

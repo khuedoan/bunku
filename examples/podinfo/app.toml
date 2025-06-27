@@ -1,6 +1,3 @@
-[global]
-nameOverride = "podinfo"
-
 [controllers.main]
 enabled = true
 type = "deployment"

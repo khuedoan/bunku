@@ -2,22 +2,8 @@ use crate::values::{PodOptions, Values};
 use k8s_openapi::apimachinery::pkg::apis::meta::v1::ObjectMeta;
 use std::collections::BTreeMap;
 
-pub fn generate_name(values: &Values, resource_name: &str) -> String {
-    if let Some(fullname_override) = &values.global.fullname_override {
-        return fullname_override.clone();
-    }
-
-    let base_name = if let Some(name_override) = &values.global.name_override {
-        name_override.clone()
-    } else {
-        "app".to_string() // Default app name
-    };
-
-    if resource_name == "main" {
-        base_name
-    } else {
-        format!("{}-{}", base_name, resource_name)
-    }
+pub fn generate_name(_values: &Values, resource_name: &str) -> String {
+    resource_name.to_string()
 }
 
 pub fn generate_labels(

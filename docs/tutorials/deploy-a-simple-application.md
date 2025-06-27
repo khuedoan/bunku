@@ -8,7 +8,6 @@ First, create a `values.toml` file with a basic deployment:
 
 ```toml
 [global]
-nameOverride = "blog"
 
 [controllers.main]
 enabled = true
@@ -65,7 +64,6 @@ Here's the complete `values.toml` file:
 
 ```toml
 [global]
-nameOverride = "blog"
 
 [controllers.main]
 enabled = true

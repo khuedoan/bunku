@@ -14,11 +14,11 @@ fmt:
 
 test: lint test-unit
 
-test-unit:
-	cargo test
-
 lint:
 	cargo clippy -- --deny warnings
+
+test-unit:
+	cargo test
 
 update:
 	nix flake update

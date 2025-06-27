@@ -1,9 +1,9 @@
-apiVersion = "v1beta1"
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 1
 
-[metadata]
-name = "hello-world"
-
-[containers.app]
+[controllers.main.containers.app]
 image = "docker.io/library/busybox:1.36"
 command = ["/bin/sh"]
 args = ["-c", "while true; do echo Hello World!; sleep 5; done"]

@@ -8,7 +8,6 @@ Here's the general structure of a `values.toml` file:
 ```toml
 # Global configuration applied to all resources
 [global]
-nameOverride = "myapp"
 
 [global.labels]
 "environment" = "production"
