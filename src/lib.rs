@@ -136,4 +136,44 @@ accessModes = ["ReadWriteOnce"]
 
         assert_eq!(resources.len(), 1);
     }
+
+    #[test]
+    fn test_list_output_format() {
+        let toml_content = r#"
+[global]
+
+[controllers.main]
+enabled = true
+type = "deployment"
+replicas = 1
+
+[controllers.main.containers.app]
+image = "nginx:latest"
+
+[service.main]
+enabled = true
+type = "ClusterIP"
+controller = "main"
+
+[service.main.ports.http]
+port = 80
+targetPort = 80
+"#;
+
+        let values: Values = toml::from_str(toml_content).unwrap();
+        let resources = generate_all_resources(&values);
+
+        // Create List object
+        let list = serde_json::json!({
+            "apiVersion": "v1",
+            "kind": "List",
+            "items": resources
+        });
+
+        // Verify List structure
+        assert_eq!(list["apiVersion"], "v1");
+        assert_eq!(list["kind"], "List");
+        assert!(list["items"].is_array());
+        assert_eq!(list["items"].as_array().unwrap().len(), 2);
+    }
 }

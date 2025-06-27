@@ -40,7 +40,7 @@ JSON manifests that are compatible with `kubectl apply`.
 - **Type**: Directory path
 - **Required**: No
 - **Description**: Output directory for separate JSON files. If not specified,
-  outputs a JSON array to stdout.
+  outputs a List object to stdout.
 - **Example**: `--output-dir ./manifests`
 - **Behavior**: Creates one file per resource with naming pattern
   `{Kind}-{Name}.json`
@@ -59,30 +59,49 @@ JSON manifests that are compatible with `kubectl apply`.
 
 ### Stdout Mode (Default)
 
-When `--output-dir` is not specified:
+When `--output-dir` is not specified, outputs a Kubernetes List object containing
+all resources:
 
 ```bash
 bunku --filename app.toml
 ```
 
-Outputs a JSON array containing all resources:
+Example output:
 
 ```json
-[
-  {
-    "apiVersion": "apps/v1",
-    "kind": "Deployment",
-    "metadata": { "name": "my-app" },
-    "spec": { ... }
-  },
-  {
-    "apiVersion": "v1",
-    "kind": "Service",
-    "metadata": { "name": "my-app" },
-    "spec": { ... }
-  }
-]
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": { "name": "my-app" },
+      "spec": { ... }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": { "name": "my-app" },
+      "spec": { ... }
+    }
+  ]
+}
 ```
+
+This format is compatible with `kubectl apply -f -`:
+
+```bash
+bunku --filename app.toml | kubectl apply -f -
+```
+
+> **Note:**
+>
+> Keep in mind that the Kubernetes API does not have a `kind` named `List`.
+>
+> `kind: List` is a client-side, internal implementation detail for processing
+> collections that might be of different kinds of object. Avoid depending on
+> `kind: List` in automation or other code.
 
 ### File Mode
 

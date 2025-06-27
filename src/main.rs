@@ -28,6 +28,14 @@ fn get_resource_filename(resource: &Value) -> String {
     format!("{}-{}.json", kind, name)
 }
 
+fn create_list_object(items: Vec<Value>) -> Value {
+    serde_json::json!({
+        "apiVersion": "v1",
+        "kind": "List",
+        "items": items
+    })
+}
+
 fn main() {
     let args = Args::parse();
 
@@ -68,8 +76,9 @@ fn main() {
                     }
                 }
                 None => {
-                    // Default behavior: output array to stdout
-                    let json = serde_json::to_string_pretty(&resources).unwrap();
+                    // Wrap resources in a List object for stdout
+                    let list = create_list_object(resources);
+                    let json = serde_json::to_string_pretty(&list).unwrap();
                     println!("{}", json);
                 }
             }
